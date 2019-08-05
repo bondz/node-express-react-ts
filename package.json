@@ -48,6 +48,7 @@
     }
   },
   "resolutions": {
-    "@types/node": "10.14.13"
+    "@types/node": "10.14.13",
+    "lodash": ">=4.17.13"
   }
 }
