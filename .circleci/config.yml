@@ -4,17 +4,18 @@
 #
 version: 2
 jobs:
-  build:
+  NERT Server:
     docker:
       # specify the version you desire here
-      - image: circleci/node:10.16.0
+      - image: circleci/node:10
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/mongo:3.4.4
+      # - image: circleci/mongo:4.0.3
 
-    working_directory: ~/exercise-react
+    # Change this directory to your project's directory.
+    working_directory: ~/nert
 
     steps:
       - checkout
@@ -22,18 +23,62 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "package.json" }}
+            - dependency-cache-server-{{ checksum "package.json" }}
             # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
+            - dependency-cache-server-
 
       - run: yarn
 
       - save_cache:
           paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
+            - ./node_modules
+          key: dependency-cache-server-{{ checksum "package.json" }}
 
       # Run typescript
       - run: yarn tsc
       # run tests!
       - run: yarn jest
+
+  NERT Client:
+    docker:
+      # specify the version you desire here
+      - image: circleci/node:10
+
+      # Specify service dependencies here if necessary
+      # CircleCI maintains a library of pre-built images
+      # documented at https://circleci.com/docs/2.0/circleci-images/
+      # - image: circleci/mongo:3.4.4
+
+    # Change this directory to your project's directory.
+    working_directory: ~/nert
+
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - dependency-cache-client-{{ checksum "package.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - dependency-cache-client-
+
+      - run:
+          name: Install client dependencies
+          command: cd client && yarn
+
+      - save_cache:
+          paths:
+            - ./client/node_modules
+          key: dependency-cache-client-{{ checksum "package.json" }}
+
+      # run tests!
+      - run:
+          name: Run client tests
+          command: cd client && yarn test
+
+workflows:
+  version: 2
+  Test Server and Client:
+    jobs:
+      - NERT Client
+      - NERT Server
