@@ -2,7 +2,7 @@
 #
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
-version: 2
+version: 2.1
 jobs:
   NERT Server:
     docker:
@@ -14,8 +14,7 @@ jobs:
       # documented at https://circleci.com/docs/2.0/circleci-images/
       # - image: circleci/mongo:4.0.3
 
-    # Change this directory to your project's directory.
-    working_directory: ~/nert
+    working_directory: ~/node-express-react-ts
 
     steps:
       - checkout
@@ -27,12 +26,13 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - dependency-cache-server-
 
-      - run: yarn
+      - run: yarn --frozen-lockfile
 
       - save_cache:
-          paths:
-            - ./node_modules
           key: dependency-cache-server-{{ checksum "package.json" }}
+          paths:
+            # Save the yarn cache folder so we can cache cypress as well.
+            - ~/.cache
 
       # Run typescript
       - run: yarn tsc
@@ -44,13 +44,7 @@ jobs:
       # specify the version you desire here
       - image: circleci/node:10
 
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/mongo:3.4.4
-
-    # Change this directory to your project's directory.
-    working_directory: ~/nert
+    working_directory: ~/node-express-react-ts
 
     steps:
       - checkout
@@ -58,27 +52,67 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-            - dependency-cache-client-{{ checksum "package.json" }}
+            - dependency-cache-client-{{ checksum "./client/package.json" }}
             # fallback to using the latest cache if no exact match is found
             - dependency-cache-client-
 
       - run:
           name: Install client dependencies
-          command: cd client && yarn
+          command: cd client && yarn --frozen-lockfile
 
       - save_cache:
+          key: dependency-cache-client-{{ checksum "./client/package.json" }}
           paths:
             - ./client/node_modules
-          key: dependency-cache-client-{{ checksum "package.json" }}
 
       # run tests!
       - run:
           name: Run client tests
           command: cd client && yarn test
 
+  NERT Integration:
+    docker:
+      # specify the version you desire here
+      - image: cypress/browsers:node10.11.0-chrome75
+
+      # Specify service dependencies here if necessary
+      # CircleCI maintains a library of pre-built images
+      # documented at https://circleci.com/docs/2.0/circleci-images/
+      # - image: circleci/mongo:4.0.3
+
+    working_directory: ~/node-express-react-ts
+
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - dependency-cache-server-{{ checksum "package.json" }}
+            - dependency-cache-server-
+
+      - run:
+          name: Build client
+          command: cd client && yarn --frozen-lockfile && yarn build
+      - run:
+          name: Build server
+          command: yarn --frozen-lockfile && yarn tsc
+
+      # run tests!
+      - run:
+          name: Run integration tests
+          command: npx start-server-and-test start http://localhost:3005 test:integration
+
 workflows:
-  version: 2
   Test Server and Client:
     jobs:
       - NERT Client
       - NERT Server
+      - NERT Integration:
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - NERT Client
+            - NERT Server
