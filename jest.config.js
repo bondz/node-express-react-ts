@@ -1,5 +1,5 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  testPathIgnorePatterns: ['/client/'],
+  testPathIgnorePatterns: ['/client/', '/cypress/'],
 };
