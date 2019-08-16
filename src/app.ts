@@ -5,6 +5,7 @@ import compression from 'compression';
 import morgan from 'morgan';
 import graphQLHTTP from 'express-graphql';
 import path from 'path';
+import fs from 'fs';
 
 import apiRouter from './routes/index';
 import schema from './schema';
@@ -56,10 +57,12 @@ app.use(
   }),
 );
 
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../', 'client/build')));
+const clientPath = path.join(__dirname, '../', 'client/build');
+
+if (fs.existsSync(clientPath)) {
+  app.use(express.static(clientPath));
   app.get('/*', (_req, res) => {
-    res.sendFile(path.join(__dirname, '../', 'client/build/index.html'));
+    res.sendFile(path.join(clientPath, 'index.html'));
   });
 }
 
