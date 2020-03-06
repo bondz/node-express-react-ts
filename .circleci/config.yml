@@ -73,7 +73,7 @@ jobs:
   NERT Integration:
     docker:
       # specify the version you desire here
-      - image: cypress/browsers:node10.11.0-chrome75
+      - image: cypress/browsers:node10.16.0-chrome77
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
