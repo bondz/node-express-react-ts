@@ -18,3 +18,5 @@ coverage
 .env.production.local
 
 *.log
+
+cypress/videos
