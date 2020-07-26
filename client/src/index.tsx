@@ -9,8 +9,8 @@ import {
   InMemoryCache,
   createHttpLink,
 } from '@apollo/client';
-import { setContext } from '@apollo/link-context';
-import { onError } from '@apollo/link-error';
+import { setContext } from '@apollo/client/link/context';
+import { onError } from '@apollo/client/link/error';
 
 import App from './App';
 import * as serviceWorker from './serviceWorker';

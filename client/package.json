@@ -4,8 +4,6 @@
   "private": true,
   "dependencies": {
     "@apollo/client": "3.0.2",
-    "@apollo/link-context": "2.0.0-beta.3",
-    "@apollo/link-error": "2.0.0-beta.3",
     "@sentry/browser": "5.20.1",
     "@testing-library/jest-dom": "^5.11.1",
     "@testing-library/react": "10.4.7",
