@@ -14,7 +14,7 @@ function SampleComponent() {
   const { data, loading, error } = useQuery(query);
 
   if (loading) {
-    return <>Please wait</>;
+    return <>Please wait - GraphQL Data Loading</>;
   }
 
   if (error) {
