@@ -3,7 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import compression from 'compression';
 import morgan from 'morgan';
-import graphQLHTTP from 'express-graphql';
+import { graphqlHTTP } from 'express-graphql';
 import path from 'path';
 import fs from 'fs';
 
@@ -17,7 +17,7 @@ const logFormat = process.env.NODE_ENV === 'production' ? 'combined' : 'dev';
 
 app.use(
   morgan(logFormat, {
-    skip: function(_req, res) {
+    skip: function (_req, res) {
       if (process.env.NODE_ENV === 'test') {
         return true;
       }
@@ -30,7 +30,7 @@ app.use(
 
 app.use(
   morgan(logFormat, {
-    skip: function(_req, res) {
+    skip: function (_req, res) {
       if (process.env.NODE_ENV === 'test') {
         return true;
       }
@@ -51,7 +51,7 @@ app.use('/api', apiRouter);
 
 app.use(
   '/graphql',
-  graphQLHTTP({
+  graphqlHTTP({
     schema,
     graphiql: true,
   }),
@@ -67,7 +67,7 @@ if (fs.existsSync(clientPath)) {
 }
 
 // catch 404 and forward to error handler
-app.use(function(
+app.use(function (
   _req: express.Request,
   _res: express.Response,
   next: express.NextFunction,
@@ -76,7 +76,7 @@ app.use(function(
 });
 
 // error handler
-app.use(function(err: any, req: express.Request, res: express.Response) {
+app.use(function (err: any, req: express.Request, res: express.Response) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};

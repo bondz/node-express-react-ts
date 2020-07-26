@@ -2,12 +2,15 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import * as sentry from '@sentry/browser';
 
-import { ApolloProvider } from '@apollo/react-hooks';
-import { ApolloClient } from 'apollo-client';
-import { createHttpLink } from 'apollo-link-http';
-import { onError } from 'apollo-link-error';
-import { InMemoryCache } from 'apollo-cache-inmemory';
-import { ApolloLink } from 'apollo-link';
+import {
+  ApolloProvider,
+  ApolloClient,
+  ApolloLink,
+  InMemoryCache,
+  createHttpLink,
+} from '@apollo/client';
+import { setContext } from '@apollo/client/link/context';
+import { onError } from '@apollo/client/link/error';
 
 import App from './App';
 import * as serviceWorker from './serviceWorker';
@@ -31,6 +34,14 @@ const link = ApolloLink.from([
     if (networkError) {
       // Todo: Logout the user for 401 http errors?
     }
+  }),
+  setContext((_, { headers }) => {
+    return {
+      headers: {
+        ...headers,
+        authorization: undefined, // You can pass a token here like: token ? `Bearer ${token}` : null,
+      },
+    };
   }),
   createHttpLink({
     uri: '/graphql',
