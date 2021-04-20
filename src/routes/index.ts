@@ -3,7 +3,7 @@ import sampleController from '../controllers/sample';
 
 const router = Router();
 
-router.get('/', function(_req, res, _next) {
+router.get('/', function (_req, res) {
   const message = sampleController();
 
   res.status(200).json({ message });

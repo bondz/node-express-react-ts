@@ -76,7 +76,11 @@ app.use(function (
 });
 
 // error handler
-app.use(function (err: any, req: express.Request, res: express.Response) {
+app.use(function (
+  err: createError.HttpError,
+  req: express.Request,
+  res: express.Response,
+) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
