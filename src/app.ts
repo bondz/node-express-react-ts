@@ -89,7 +89,9 @@ app.use(function (
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  return;
+  // There's no active view engine so the render method would throw an error in the console
+  // res.render('error');
 });
 
 export default app;
