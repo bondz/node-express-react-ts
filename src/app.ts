@@ -76,14 +76,22 @@ app.use(function (
 });
 
 // error handler
-app.use(function (err: any, req: express.Request, res: express.Response) {
+// When a middleware has four args, express sees it as an error handler
+app.use(function (
+  err: any,
+  req: express.Request,
+  res: express.Response,
+  _next: express.NextFunction,
+) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  return;
+  // There's no active view engine so the render method would throw an error in the console
+  // res.render('error');
 });
 
 export default app;
